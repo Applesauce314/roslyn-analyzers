@@ -19,7 +19,6 @@ namespace Analyzer.Utilities
                         success = true;
                         break;
                     case SpecialType.System_Int32:
-#if !fix
                         if (value.GetType() == typeof(long))
                         {
                             convertedValue = unchecked((ulong)(long)value);
@@ -30,13 +29,10 @@ namespace Analyzer.Utilities
                             convertedValue = unchecked((ulong)(int)value);
                             success = true;
                         }
-#else
-                        convertedValue = unchecked((ulong)(int)value);
-                        success = true;
-#endif
+
                         break;
                     case SpecialType.System_Int64:
-#if !fix
+
                         if (value.GetType() == typeof(int))
                         {
                             convertedValue = unchecked((ulong)(int)value);
@@ -47,10 +43,7 @@ namespace Analyzer.Utilities
                             convertedValue = unchecked((ulong)(long)value);
                             success = true;
                         }
-#else
-                        convertedValue = unchecked((ulong)(long)value);
-                        success = true;
-#endif
+
                         break;
                     case SpecialType.System_UInt16:
                         convertedValue = (ushort)value;
