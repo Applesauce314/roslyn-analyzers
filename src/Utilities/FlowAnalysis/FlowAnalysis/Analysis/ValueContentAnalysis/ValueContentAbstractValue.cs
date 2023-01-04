@@ -240,7 +240,7 @@ namespace Microsoft.CodeAnalysis.FlowAnalysis.DataFlow.ValueContentAnalysis
             Debug.Assert(value2.IsLiteralState);
 
             // Merge Literals
-            var mergedLiteralValues = this.LiteralValues.Intersect(value2.LiteralValues);
+            var mergedLiteralValues = LiteralValues.Intersect(value2.LiteralValues);
             return mergedLiteralValues.IsEmpty ? InvalidState : new ValueContentAbstractValue(mergedLiteralValues, ValueContainsNonLiteralState.No);
         }
 
@@ -369,7 +369,8 @@ namespace Microsoft.CodeAnalysis.FlowAnalysis.DataFlow.ValueContentAnalysis
                         {
                             case SpecialType.System_Single:
                             case SpecialType.System_Double:
-                                if (TryMerge((double)value1, (double)value2, binaryOperatorKind, out double doubleResult))
+                                //todo:just demonstrating the cast error can be fixed, this is probably not the correct way to do the cast
+                                if (TryMerge(Convert.ToDouble(value1), Convert.ToDouble(value2), binaryOperatorKind, out double doubleResult))
                                 {
                                     switch (resultType.SpecialType)
                                     {
