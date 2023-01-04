@@ -3076,6 +3076,142 @@ public class Test
             }.RunAsync();
         }
 
+
+        [Fact, WorkItem(-1, "https://github.com/dotnet/roslyn-analyzers/issues/TBD")]
+        public async Task TestValueContentAnalysisWithIntAsync()
+        {
+            await new VerifyCS.Test
+            {
+                TestState =
+                {
+                    Sources =
+                    {
+                        @"
+public class Test
+{
+    bool M(long t)
+    {
+        const int r = 0b0100;
+        const int q = 0b0100;
+        if (t == r + 1)
+        {
+            return t == q;
+        }
+
+        int x = 0 & 0 & 0;
+        if (t is 10)
+        {
+            return t == (10 + x);
+        }
+
+        if ((q & r) == q)
+        {
+
+        }
+        return true;
+    }
+}
+"
+                    }
+                },
+                LanguageVersion = CSharpLanguageVersion.CSharp9,
+                ExpectedDiagnostics =
+                {
+                    // Test0.cs(10,20): warning CA1508: 't == (10 + x)' is always 'true'. Remove or refactor the condition(s) to avoid dead code.
+                    GetCSharpResultAt(10, 20, "t == q", "false"),
+                    GetCSharpResultAt(16, 20, "t == (10 + x)", "true"),
+                    GetCSharpResultAt(19, 13, "(q & r) == q", "true"),
+                }
+            }.RunAsync();
+        }
+
+        [Fact, WorkItem(-1, "https://github.com/dotnet/roslyn-analyzers/issues/TBD")]
+        public async Task TestValueContentAnalysisWithLongAsync()
+        {
+            await new VerifyCS.Test
+            {
+                TestState =
+                {
+                    Sources =
+                    {
+                        @"
+public class Test
+{
+    bool M(long t)
+    {
+        const long r = 0b0100;
+        const int q = 0b0100;
+        if (t == r + 1)
+        {
+            return t == q;
+        }
+
+        int y = (int)(0L & 0 & 0);
+        if (t is 20)
+        {
+            return t == (20 + y);
+        }
+        
+        if ((q & r) == r)
+        {
+
+        }
+            
+        return true;
+    }
+}
+"
+                    }
+                },
+                LanguageVersion = CSharpLanguageVersion.CSharp9,
+                ExpectedDiagnostics =
+                {
+                    // Test0.cs(10,20): warning CA1508: 't == (20 + y)' is always 'true'. Remove or refactor the condition(s) to avoid dead code.
+                    GetCSharpResultAt(10, 20, "t == q", "false"),
+                    GetCSharpResultAt(16, 20, "t == (20 + y)", "true"),
+                    GetCSharpResultAt(19, 13, "(q & r) == r", "true"),
+
+                }
+            }.RunAsync();
+        }
+
+        [Fact, WorkItem(-1, "https://github.com/dotnet/roslyn-analyzers/issues/4056")]
+        public async Task TestValueContentAnalysisWithFloatAsync()
+        {
+            await new VerifyCS.Test
+            {
+                TestState =
+                {
+                    Sources =
+                    {
+                        @"
+public class Test
+{
+    bool M( float t)
+    {
+        const float r = 0b0100;
+        const float q = 0b0100;
+        if (t == r + 1)
+        {
+            return t == q;
+        }
+
+        return true;
+    }
+}
+"
+                    }
+                },
+                LanguageVersion = CSharpLanguageVersion.CSharp9,
+                ExpectedDiagnostics =
+                {
+                    // Test0.cs(10,20): warning CA1508: 't == (20 + y)' is always 'true'. Remove or refactor the condition(s) to avoid dead code.
+                    GetCSharpResultAt(10, 20, "t == q", "false"),
+
+                }
+            }.RunAsync();
+        }
+
         [Fact, WorkItem(4056, "https://github.com/dotnet/roslyn-analyzers/issues/4056")]
         public async Task TestBinaryPatternAsync()
         {
