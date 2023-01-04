@@ -3077,7 +3077,7 @@ public class Test
         }
 
 
-        [Fact, WorkItem(-1, "https://github.com/dotnet/roslyn-analyzers/issues/TBD")]
+        [Fact, WorkItem(6401, "https://github.com/dotnet/roslyn-analyzers/issues/6401")]
         public async Task TestValueContentAnalysisWithIntAsync()
         {
             await new VerifyCS.Test
@@ -3117,7 +3117,7 @@ public class Test
                 LanguageVersion = CSharpLanguageVersion.CSharp9,
                 ExpectedDiagnostics =
                 {
-                    // Test0.cs(10,20): warning CA1508: 't == (10 + x)' is always 'true'. Remove or refactor the condition(s) to avoid dead code.
+
                     GetCSharpResultAt(10, 20, "t == q", "false"),
                     GetCSharpResultAt(16, 20, "t == (10 + x)", "true"),
                     GetCSharpResultAt(19, 13, "(q & r) == q", "true"),
@@ -3125,7 +3125,7 @@ public class Test
             }.RunAsync();
         }
 
-        [Fact, WorkItem(-1, "https://github.com/dotnet/roslyn-analyzers/issues/TBD")]
+        [Fact, WorkItem(6401, "https://github.com/dotnet/roslyn-analyzers/issues/6401")]
         public async Task TestValueContentAnalysisWithLongAsync()
         {
             await new VerifyCS.Test
@@ -3166,7 +3166,6 @@ public class Test
                 LanguageVersion = CSharpLanguageVersion.CSharp9,
                 ExpectedDiagnostics =
                 {
-                    // Test0.cs(10,20): warning CA1508: 't == (20 + y)' is always 'true'. Remove or refactor the condition(s) to avoid dead code.
                     GetCSharpResultAt(10, 20, "t == q", "false"),
                     GetCSharpResultAt(16, 20, "t == (20 + y)", "true"),
                     GetCSharpResultAt(19, 13, "(q & r) == r", "true"),
@@ -3175,7 +3174,7 @@ public class Test
             }.RunAsync();
         }
 
-        [Fact, WorkItem(-1, "https://github.com/dotnet/roslyn-analyzers/issues/4056")]
+        [Fact, WorkItem(6401, "https://github.com/dotnet/roslyn-analyzers/issues/6401")]
         public async Task TestValueContentAnalysisWithFloatAsync()
         {
             await new VerifyCS.Test
@@ -3205,7 +3204,6 @@ public class Test
                 LanguageVersion = CSharpLanguageVersion.CSharp9,
                 ExpectedDiagnostics =
                 {
-                    // Test0.cs(10,20): warning CA1508: 't == (20 + y)' is always 'true'. Remove or refactor the condition(s) to avoid dead code.
                     GetCSharpResultAt(10, 20, "t == q", "false"),
 
                 }
