@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow.CopyAnalysis;
 using Microsoft.CodeAnalysis.Operations;
 
@@ -97,7 +98,8 @@ namespace Microsoft.CodeAnalysis.FlowAnalysis.DataFlow.ValueContentAnalysis
                 SetValueForComparisonOperator(leftOperand, rightOperand, equals, ref predicateValueKind, targetAnalysisData);
 
                 // Handle '"SomeValue" == a' and '"SomeValue" != a'
-                SetValueForComparisonOperator(rightOperand, leftOperand, equals, ref predicateValueKind, targetAnalysisData);
+                //TODO:Why is this here? it breaks other tests with our fix, but removing it breaks different other tests
+                //SetValueForComparisonOperator(rightOperand, leftOperand, equals, ref predicateValueKind, targetAnalysisData);
 
                 return predicateValueKind;
             }
@@ -235,6 +237,33 @@ namespace Microsoft.CodeAnalysis.FlowAnalysis.DataFlow.ValueContentAnalysis
                 var incrementValueType = WellKnownTypeProvider.Compilation.GetSpecialType(SpecialType.System_Int32);
                 var operationKind = operation.Kind == OperationKind.Increment ? BinaryOperatorKind.Add : BinaryOperatorKind.Subtract;
                 return targetValue.MergeBinaryOperation(incrementValue, operationKind, operation.Target.Type, incrementValueType, operation.Type);
+            }
+
+            public override ValueContentAbstractValue VisitConversion(IConversionOperation operation, object? argument)
+            {
+                var operandValue = base.VisitConversion(operation, argument);
+
+                if (operation.Conversion.Exists && !operation.Conversion.IsUserDefined)
+                {
+                    if (operation.Operand.Type != null && operation.Type != null)
+                    {
+
+                        //create a valuecontentabstractvalue with the undrlying type matching the  result type of the conversion
+                        var returnValue = ValueContentAbstractValue.CreateForConversion(operandValue, operation);
+
+                        return returnValue;
+                    }
+                    else
+                    {
+                        return operandValue;
+                    }
+                }
+                else
+                {
+                    return ValueDomain.UnknownOrMayBeValue;
+                }
+                // Conservative for error code and user defined operator.
+
             }
 
             public override ValueContentAbstractValue VisitObjectCreation(IObjectCreationOperation operation, object? argument)

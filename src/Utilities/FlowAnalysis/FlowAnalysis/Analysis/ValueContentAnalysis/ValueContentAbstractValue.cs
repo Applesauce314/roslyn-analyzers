@@ -75,6 +75,29 @@ namespace Microsoft.CodeAnalysis.FlowAnalysis.DataFlow.ValueContentAnalysis
             return new ValueContentAbstractValue(ImmutableHashSet.Create<object?>(literal), ValueContainsNonLiteralState.No);
         }
 
+        internal static ValueContentAbstractValue CreateForConversion(ValueContentAbstractValue convertFrom, IConversionOperation operation)
+        {
+            ITypeSymbol sourceType = operation.Operand.Type;
+            ITypeSymbol targetType = operation.Type;
+
+
+            var builder = ImmutableHashSet.CreateBuilder<object?>();
+            foreach (var literal in convertFrom.LiteralValues)
+            {
+                try
+                {   //todo:This function performs a checked conversion, need to also perform an unchecked conversion
+                    builder.Add(DiagnosticHelpers.UnboxAndConvert(literal, sourceType.SpecialType, targetType.SpecialType));
+                }
+                catch (Exception)
+                {
+                    return InvalidState;
+                }
+            }
+
+            return new ValueContentAbstractValue(builder.ToImmutable(), convertFrom.NonLiteralState);
+
+        }
+
         private static ValueContentAbstractValue Create(ImmutableHashSet<object?> literalValues, ValueContainsNonLiteralState nonLiteralState)
         {
             if (literalValues.IsEmpty)
@@ -264,6 +287,7 @@ namespace Microsoft.CodeAnalysis.FlowAnalysis.DataFlow.ValueContentAnalysis
             var builder = PooledHashSet<object?>.GetInstance();
             foreach (var leftLiteral in LiteralValues)
             {
+
                 foreach (var rightLiteral in otherState.LiteralValues)
                 {
                     if (!TryMerge(leftLiteral, rightLiteral, binaryOperatorKind, leftType, rightType, resultType, out object? result))
