@@ -40515,6 +40515,8 @@ comparative's
 compare
 comparing
 compared
+comparer
+comparers
 compares
 compare's
 comparable
@@ -47507,6 +47509,12 @@ desecrates
 desecration
 desecration's
 deselection
+deserialization
+deserialize
+deserialized
+deserializer
+deserializers
+deserializing
 desert
 deserting
 deserted
@@ -59503,6 +59511,7 @@ deformation
 conformation
 formatted
 reformatted
+formatter
 formatting
 formatting's
 formed
@@ -100515,6 +100524,8 @@ render
 rendering
 renderings
 rendered
+renderer
+renderers
 renders
 render's
 rendering
@@ -106129,6 +106140,8 @@ serialization's
 serialize
 serializing
 serialized
+serializer
+serializers
 serializes
 series
 series's
